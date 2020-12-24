@@ -60,12 +60,7 @@ public class HomeFragment extends Fragment implements NoteAdapter.NotesClickList
         binding.rvNotes.setAdapter(noteAdapter);
         viewModel= ViewModelProviders.of(getActivity()).get(HomeFragmentViewModel.class);
         viewModel.getToolBarName().observe(getViewLifecycleOwner(), s -> binding.tvToolbarTitle.setText(s));
-        viewModel.getNotesList().observe(getViewLifecycleOwner(), new Observer<List<NoteModel>>() {
-            @Override
-            public void onChanged(List<NoteModel> noteModels) {
-                respondToNotesList(noteModels);
-            }
-        });
+        viewModel.getNotesList().observe(getViewLifecycleOwner(), resp->{respondToNotesList(resp);});
 
         binding.ivOption.setOnClickListener(arch -> {
             popupMenu=new PopupMenu(getContext(),binding.ivOption);
@@ -75,23 +70,13 @@ public class HomeFragment extends Fragment implements NoteAdapter.NotesClickList
                     case R.id.all:
                         if(! viewModel.isViewingAllNotes()){
                             binding.progressBar.setVisibility(View.VISIBLE);
-                            viewModel.optionSelected("all").observe(getViewLifecycleOwner(), new Observer<List<NoteModel>>() {
-                                @Override
-                                public void onChanged(List<NoteModel> noteModels) {
-                                    respondToNotesList(noteModels);
-                                }
-                            });
+                            viewModel.optionSelected("all").observe(getViewLifecycleOwner(), resp->{respondToNotesList(resp);});
                         }
                         break;
                     case R.id.archived:
                         if(viewModel.isViewingAllNotes()){
                             binding.progressBar.setVisibility(View.VISIBLE);
-                            viewModel.optionSelected("archived").observe(getViewLifecycleOwner(), new Observer<List<NoteModel>>() {
-                                @Override
-                                public void onChanged(List<NoteModel> noteModels) {
-                                    respondToNotesList(noteModels);
-                                }
-                            });
+                            viewModel.optionSelected("archived").observe(getViewLifecycleOwner(), resp->{respondToNotesList(resp);});
                         }
                         break;
                 }
@@ -113,6 +98,7 @@ public class HomeFragment extends Fragment implements NoteAdapter.NotesClickList
         });
     }
 
+    // listenning to response from mutable livedata
     private void respondToNotesList(List<NoteModel> noteModels){
         noteAdapter.addData((ArrayList<NoteModel>) noteModels);
         binding.progressBar.setVisibility(View.GONE);
@@ -124,6 +110,7 @@ public class HomeFragment extends Fragment implements NoteAdapter.NotesClickList
         binding=null;
     }
 
+    // notes click listeners to open edit screen
     @Override
     public void noteClicked(NoteModel note) {
         Bundle bundle= new Bundle();
@@ -134,16 +121,17 @@ public class HomeFragment extends Fragment implements NoteAdapter.NotesClickList
         navController.navigate(R.id.action_homeFragment_to_editNoteFragment,bundle);
     }
 
-    // todo just toggle archived and un-archived
+    //toggling archiving and un-archiving notes
     @Override
     public void archiveNote(NoteModel note) {
-        if(note.isArchived)
-            Snackbar.make(binding.getRoot(),"UnArchived", Snackbar.LENGTH_SHORT).show();
-        else
+        if(note.isArchived==null)
             Snackbar.make(binding.getRoot(),"Archived", Snackbar.LENGTH_SHORT).show();
+        else
+            Snackbar.make(binding.getRoot(),"UnArchived", Snackbar.LENGTH_SHORT).show();
         viewModel.toggleTheArchiveStatus(note);
     }
 
+    // open popUpMenu when more btn is clicked
     @Override
     public void moreOptionClicked(View view, NoteModel note) {
         PopupMenu rvPopupMenu=new PopupMenu(getContext(),view);

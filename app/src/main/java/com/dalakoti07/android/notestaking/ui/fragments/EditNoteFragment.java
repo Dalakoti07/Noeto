@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
@@ -53,7 +54,11 @@ public class EditNoteFragment extends Fragment {
             setTheDataToUI();
         }
         navController= NavHostFragment.findNavController(this);
+        viewModel.getDescriptionError().observe(getViewLifecycleOwner(), s -> binding.etDescription.setError(s));
+        viewModel.getTitleError().observe(getViewLifecycleOwner(), s -> binding.etTitle.setError(s));
         binding.btnDone.setOnClickListener(view -> {
+            if(! viewModel.validateData(binding.etTitle.getText().toString(),binding.etDescription.getText().toString()))
+                return;
             if(creatingANewNote){
                 viewModel.createNewNote(binding.etTitle.getText().toString(),binding.etDescription.getText().toString());
             }else{

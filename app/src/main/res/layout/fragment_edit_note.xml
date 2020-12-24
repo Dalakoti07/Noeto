@@ -28,7 +28,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
-    <EditText
+    <com.google.android.material.textfield.TextInputEditText
         android:hint="Notes Title"
         android:padding="@dimen/small_margin"
         android:layout_marginEnd="@dimen/small_margin"
@@ -40,7 +40,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
-    <EditText
+    <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/et_description"
         android:padding="@dimen/small_margin"
         android:hint="Notes content"

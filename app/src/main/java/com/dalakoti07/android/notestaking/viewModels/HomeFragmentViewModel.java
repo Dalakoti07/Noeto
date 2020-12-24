@@ -14,19 +14,18 @@ import java.util.List;
 public class HomeFragmentViewModel extends ViewModel {
     private static final String TAG = "HomeFragmentViewModel";
     private LiveData<List<NoteModel>> currentNotesList;
-    private MutableLiveData<String> toolBarHeading=new MutableLiveData<>("Your Notes");
+    private final MutableLiveData<String> toolBarHeading=new MutableLiveData<>("Your Notes");
     private boolean viewingAllNotes=true;
 
     public boolean isViewingAllNotes(){
         return viewingAllNotes;
     }
 
-    //todo expose toobar name
     public LiveData<String> getToolBarName(){
         return toolBarHeading;
     }
 
-    private NotesRepository notesRepository;
+    private final NotesRepository notesRepository;
 
     public HomeFragmentViewModel(){
         Log.d(TAG, "HomeFragmentViewModel: created");
@@ -51,7 +50,11 @@ public class HomeFragmentViewModel extends ViewModel {
     }
 
     public void toggleTheArchiveStatus(NoteModel note){
-        note.setArchived(!note.isArchived);
+        if(note.isArchived==null){
+            note.setArchived(true);
+        }else{
+            note.setArchived(null);
+        }
         notesRepository.updateNote(note);
     }
 
