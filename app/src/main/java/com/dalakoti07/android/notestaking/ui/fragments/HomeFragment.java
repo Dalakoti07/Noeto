@@ -21,11 +21,13 @@ import com.dalakoti07.android.notestaking.room.NotesDao;
 import com.dalakoti07.android.notestaking.room.NotesDatabase;
 import com.dalakoti07.android.notestaking.room.models.NoteModel;
 import com.dalakoti07.android.notestaking.ui.adapters.NoteAdapter;
+import com.dalakoti07.android.notestaking.utils.Constants;
+import com.dalakoti07.android.notestaking.utils.ParcelableNote;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements NoteAdapter.NotesClickListener{
     private static final String TAG = "HomeFragment";
 
     private FragmentHomeBinding binding;
@@ -55,11 +57,13 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        noteAdapter=new NoteAdapter(getContext());
+        noteAdapter=new NoteAdapter(getContext(),this);
         binding.rvNotes.setAdapter(noteAdapter);
         navController= NavHostFragment.findNavController(this);
         binding.btnAdd.setOnClickListener(btn->{
-            navController.navigate(R.id.action_homeFragment_to_editNoteFragment);
+            Bundle bundle= new Bundle();
+            bundle.putBoolean(Constants.isNewKey,true);
+            navController.navigate(R.id.action_homeFragment_to_editNoteFragment,bundle);
         });
     }
 
@@ -67,5 +71,15 @@ public class HomeFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding=null;
+    }
+
+    @Override
+    public void noteClicked(NoteModel note) {
+        Bundle bundle= new Bundle();
+        bundle.putBoolean(Constants.isNewKey,false);
+        ParcelableNote pNote=new ParcelableNote();
+        pNote.copyDataToItself(note);
+        bundle.putParcelable(Constants.editNoteKey,pNote);
+        navController.navigate(R.id.action_homeFragment_to_editNoteFragment,bundle);
     }
 }

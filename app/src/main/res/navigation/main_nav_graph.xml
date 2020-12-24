@@ -46,5 +46,13 @@
         tools:layout="@layout/fragment_edit_note"
         android:id="@+id/editNoteFragment"
         android:name="com.dalakoti07.android.notestaking.ui.fragments.EditNoteFragment"
-        android:label="EditNoteFragment" />
+        android:label="EditNoteFragment" >
+        <argument
+            android:name="isNew"
+            app:argType="boolean"
+            android:defaultValue="true" />
+        <argument
+            android:name="editNote"
+            app:argType="com.dalakoti07.android.notestaking.utils.ParcelableNote" />
+    </fragment>
 </navigation>

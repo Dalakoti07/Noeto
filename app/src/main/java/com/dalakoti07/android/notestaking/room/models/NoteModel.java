@@ -26,6 +26,10 @@ public class NoteModel {
     @ColumnInfo(name = "archived",defaultValue = "0")
     public Boolean isArchived;
 
+    public void setArchived(Boolean archived) {
+        isArchived = archived;
+    }
+
     public int getNotesId() {
         return notesId;
     }

@@ -18,8 +18,14 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NotesHolder> {
     private ArrayList<NoteModel> allNotes= new ArrayList<>();
     private Context context;
 
-    public NoteAdapter(Context context){
+    private NotesClickListener listener;
+    public interface NotesClickListener{
+        void noteClicked(NoteModel note);
+    }
+
+    public NoteAdapter(Context context,NotesClickListener listener){
         this.context=context;
+        this.listener=listener;
     }
 
     public void addData(ArrayList<NoteModel> arrayList){
@@ -35,7 +41,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NotesHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull NotesHolder holder, int position) {
-        holder.binData(allNotes.get(position));
+        holder.bindData(allNotes.get(position));
     }
 
     @Override
@@ -51,10 +57,13 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NotesHolder> {
             binding=RvItemNoteBinding.bind(itemView);
         }
 
-        public void binData(NoteModel note){
+        public void bindData(NoteModel note){
             binding.tvTitle.setText(note.noteTitle);
             binding.tvNote.setText(note.notesDescription);
             binding.tvModified.setText(note.updatedOn);
+            binding.tvNote.setOnClickListener(view -> {
+                listener.noteClicked(note);
+            });
         }
     }
 }

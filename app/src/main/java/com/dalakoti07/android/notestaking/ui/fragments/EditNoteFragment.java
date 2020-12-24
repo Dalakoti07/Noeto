@@ -17,6 +17,8 @@ import com.dalakoti07.android.notestaking.room.NotesDao;
 import com.dalakoti07.android.notestaking.room.NotesDatabase;
 import com.dalakoti07.android.notestaking.room.models.NoteModel;
 import com.dalakoti07.android.notestaking.ui.adapters.NoteAdapter;
+import com.dalakoti07.android.notestaking.utils.Constants;
+import com.dalakoti07.android.notestaking.utils.ParcelableNote;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -25,10 +27,13 @@ import java.util.Date;
 
 //act as a fragment which can create a new note or edit an existing note
 public class EditNoteFragment extends Fragment {
+    //todo create a viewmodel
     private FragmentEditNoteBinding binding;
     private NotesDatabase notesDatabase;
     private NotesDao notesDao;
     private NavController navController;
+    private Boolean creatingANewNote;
+    private ParcelableNote parcelableNote;
 
     @Nullable
     @Override
@@ -40,17 +45,43 @@ public class EditNoteFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        Bundle bundle=getArguments();
+        creatingANewNote=bundle.getBoolean(Constants.isNewKey);
+        if(!creatingANewNote){
+            parcelableNote=bundle.getParcelable(Constants.editNoteKey);
+            setTheDataToUI();
+        }
         navController= NavHostFragment.findNavController(this);
         notesDatabase= NotesApp.getNotesDatabase();
         notesDao=notesDatabase.notesDao();
         binding.btnDone.setOnClickListener(view -> {
-            NotesDatabase.databaseWriteExecutor.execute(() -> {
-                notesDao.insertNote(new NoteModel(binding.etTitle.getText().toString(),
-                        binding.etDescription.getText().toString(),
-                        getTheDateAndTime()));
-            });
+            if(creatingANewNote){
+                NotesDatabase.databaseWriteExecutor.execute(() -> {
+                    notesDao.insertNote(new NoteModel(binding.etTitle.getText().toString(),
+                            binding.etDescription.getText().toString(),
+                            getTheDateAndTime()));
+                });
+            }else{
+                NotesDatabase.databaseWriteExecutor.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        NoteModel noteModel= new NoteModel(binding.etTitle.getText().toString(),binding.etDescription.getText().toString(),
+                                getTheDateAndTime());
+                        noteModel.setNotesId(parcelableNote.getNotesId());
+                        noteModel.setArchived(parcelableNote.getArchived());
+                        notesDao.updateNote(noteModel);
+                    }
+                });
+            }
             navController.navigateUp();
         });
+    }
+
+    private void setTheDataToUI() {
+        binding.tvUpdatedOn.setVisibility(View.VISIBLE);
+        binding.tvUpdatedOn.append(parcelableNote.getUpdatedOn());
+        binding.etTitle.setText(parcelableNote.getNoteTitle());
+        binding.etDescription.setText(parcelableNote.getNotesDescription());
     }
 
     private String getTheDateAndTime() {

@@ -26,6 +26,7 @@ public class SplashScreenFragment extends Fragment {
         return binding.getRoot();
     }
 
+    //todo sometime its not working
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
