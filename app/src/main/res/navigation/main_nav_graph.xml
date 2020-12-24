@@ -46,9 +46,5 @@
         tools:layout="@layout/fragment_edit_note"
         android:id="@+id/editNoteFragment"
         android:name="com.dalakoti07.android.notestaking.ui.fragments.EditNoteFragment"
-        android:label="EditNoteFragment" >
-        <action
-            android:id="@+id/action_editNoteFragment_to_homeFragment"
-            app:destination="@id/homeFragment" />
-    </fragment>
+        android:label="EditNoteFragment" />
 </navigation>
