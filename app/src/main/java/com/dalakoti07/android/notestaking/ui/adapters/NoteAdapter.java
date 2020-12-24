@@ -14,13 +14,23 @@ import com.dalakoti07.android.notestaking.room.models.NoteModel;
 
 import java.util.ArrayList;
 
-public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NotesHolder> {
+public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NotesHolder> implements ItemTouchHelperAdapter{
     private ArrayList<NoteModel> allNotes= new ArrayList<>();
     private Context context;
 
     private NotesClickListener listener;
+
+    @Override
+    public void onItemDismiss(int position) {
+        listener.archiveNote(allNotes.get(position));
+        allNotes.remove(position);
+        notifyItemRemoved(position);
+    }
+
     public interface NotesClickListener{
         void noteClicked(NoteModel note);
+        void archiveNote(NoteModel note);
+        void moreOptionClicked(View view,NoteModel note);
     }
 
     public NoteAdapter(Context context,NotesClickListener listener){
@@ -29,7 +39,13 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NotesHolder> {
     }
 
     public void addData(ArrayList<NoteModel> arrayList){
-        this.allNotes.addAll(arrayList);
+        allNotes.clear();
+        allNotes.addAll(arrayList);
+        notifyDataSetChanged();
+    }
+
+    public void clearData(){
+        allNotes.clear();
         notifyDataSetChanged();
     }
 
@@ -63,6 +79,9 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NotesHolder> {
             binding.tvModified.setText(note.updatedOn);
             binding.tvNote.setOnClickListener(view -> {
                 listener.noteClicked(note);
+            });
+            binding.ivMore.setOnClickListener(view -> {
+                listener.moreOptionClicked(view,note);
             });
         }
     }

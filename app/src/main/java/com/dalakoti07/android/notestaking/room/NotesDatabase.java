@@ -5,13 +5,15 @@ import android.content.Context;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
+import androidx.room.migration.Migration;
+import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import com.dalakoti07.android.notestaking.room.models.NoteModel;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@Database(entities = {NoteModel.class},version = 1)
+@Database(entities = {NoteModel.class},version = 2)
 public abstract class NotesDatabase extends RoomDatabase {
 
     public abstract NotesDao notesDao();
@@ -27,7 +29,8 @@ public abstract class NotesDatabase extends RoomDatabase {
             synchronized (NotesDatabase.class) {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
-                            NotesDatabase.class, "food_database")
+                            NotesDatabase.class, "notes_database")
+                            .fallbackToDestructiveMigration()
                             .build();
                 }
             }

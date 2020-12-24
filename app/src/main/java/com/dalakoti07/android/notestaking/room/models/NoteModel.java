@@ -23,7 +23,8 @@ public class NoteModel {
     @ColumnInfo(name = "updatedOn")
     public String updatedOn;
 
-    @ColumnInfo(name = "archived",defaultValue = "0")
+    //default value was "0"
+    @ColumnInfo(name = "archived",defaultValue = "false")
     public Boolean isArchived;
 
     public void setArchived(Boolean archived) {
@@ -66,5 +67,11 @@ public class NoteModel {
         this.noteTitle = noteTitle;
         this.notesDescription = notesDescription;
         this.updatedOn = updatedOn;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return noteTitle+" -> "+updatedOn;
     }
 }

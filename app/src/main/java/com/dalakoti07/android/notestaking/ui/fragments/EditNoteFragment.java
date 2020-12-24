@@ -73,6 +73,7 @@ public class EditNoteFragment extends Fragment {
                     }
                 });
             }
+            //todo close keyboard before going back
             navController.navigateUp();
         });
     }

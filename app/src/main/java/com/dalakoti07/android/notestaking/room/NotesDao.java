@@ -25,9 +25,9 @@ public interface NotesDao {
     @Delete
     void deleteNote(NoteModel note);
 
-    @Query("SELECT * from notes")
+    @Query("SELECT * from notes where archived is NULL")
     LiveData<List<NoteModel>> fetchAllNotes();
 
-    @Query("SELECT * from notes where archived")
+    @Query("SELECT * from notes where archived is NOT NULL")
     LiveData<List<NoteModel>> fetchArchivedNotes();
 }
