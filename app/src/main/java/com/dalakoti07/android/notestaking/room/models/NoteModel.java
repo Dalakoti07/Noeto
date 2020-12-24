@@ -6,6 +6,7 @@ import androidx.room.Entity;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
+//todo what if titles are same
 @Entity(tableName = "notes",indices = {
         @Index( value = {"noteTitle"},unique = true)
 })

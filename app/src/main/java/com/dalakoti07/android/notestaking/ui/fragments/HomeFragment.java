@@ -14,6 +14,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.NavController;
 import androidx.navigation.NavHostController;
 import androidx.navigation.fragment.NavHostFragment;
@@ -29,6 +31,7 @@ import com.dalakoti07.android.notestaking.ui.adapters.NoteAdapter;
 import com.dalakoti07.android.notestaking.ui.adapters.SimpleItemTouchHelperCallback;
 import com.dalakoti07.android.notestaking.utils.Constants;
 import com.dalakoti07.android.notestaking.utils.ParcelableNote;
+import com.dalakoti07.android.notestaking.viewModels.HomeFragmentViewModel;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
@@ -36,14 +39,11 @@ import java.util.List;
 
 public class HomeFragment extends Fragment implements NoteAdapter.NotesClickListener{
     private static final String TAG = "HomeFragment";
-
     private FragmentHomeBinding binding;
     private NavController navController;
     private NoteAdapter noteAdapter;
-    private NotesDatabase notesDatabase;
-    private NotesDao notesDao;
-    private boolean isArchivedList=false;
     private PopupMenu popupMenu;
+    private HomeFragmentViewModel viewModel;
 
     @Nullable
     @Override
@@ -55,41 +55,47 @@ public class HomeFragment extends Fragment implements NoteAdapter.NotesClickList
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        notesDatabase= NotesApp.getNotesDatabase();
-        notesDao=notesDatabase.notesDao();
-
-        notesDao.fetchAllNotes().observe(getViewLifecycleOwner(), new Observer<List<NoteModel>>() {
-            @Override
-            public void onChanged(List<NoteModel> noteModels) {
-                isArchivedList=false;
-                Log.d(TAG, "live data onChanged: "+noteModels.size());
-                noteAdapter.addData((ArrayList<NoteModel>) noteModels);
-                binding.progressBar.setVisibility(View.GONE);
-            }
-        });
 
         noteAdapter=new NoteAdapter(getContext(),this);
         binding.rvNotes.setAdapter(noteAdapter);
+        viewModel= ViewModelProviders.of(getActivity()).get(HomeFragmentViewModel.class);
+        viewModel.getToolBarName().observe(getViewLifecycleOwner(), s -> binding.tvToolbarTitle.setText(s));
+        viewModel.getNotesList().observe(getViewLifecycleOwner(), new Observer<List<NoteModel>>() {
+            @Override
+            public void onChanged(List<NoteModel> noteModels) {
+                respondToNotesList(noteModels);
+            }
+        });
 
         binding.ivOption.setOnClickListener(arch -> {
-            /*binding.progressBar.setVisibility(View.VISIBLE);
-            noteAdapter.clearData();
-            isArchivedList=true;
-            notesDao.fetchArchivedNotes().observe(getViewLifecycleOwner(), new Observer<List<NoteModel>>() {
-                @Override
-                public void onChanged(List<NoteModel> noteModels) {
-                    Log.d(TAG, "live data onChanged: "+noteModels.size());
-                    noteAdapter.addData((ArrayList<NoteModel>) noteModels);
-                    binding.progressBar.setVisibility(View.GONE);
-                }
-            });*/
             popupMenu=new PopupMenu(getContext(),binding.ivOption);
             popupMenu.inflate(R.menu.main_menu);
-            popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                @Override
-                public boolean onMenuItemClick(MenuItem menuItem) {
-                    return true;
+            popupMenu.setOnMenuItemClickListener(menuItem -> {
+                switch (menuItem.getItemId()){
+                    case R.id.all:
+                        if(! viewModel.isViewingAllNotes()){
+                            binding.progressBar.setVisibility(View.VISIBLE);
+                            viewModel.optionSelected("all").observe(getViewLifecycleOwner(), new Observer<List<NoteModel>>() {
+                                @Override
+                                public void onChanged(List<NoteModel> noteModels) {
+                                    respondToNotesList(noteModels);
+                                }
+                            });
+                        }
+                        break;
+                    case R.id.archived:
+                        if(viewModel.isViewingAllNotes()){
+                            binding.progressBar.setVisibility(View.VISIBLE);
+                            viewModel.optionSelected("archived").observe(getViewLifecycleOwner(), new Observer<List<NoteModel>>() {
+                                @Override
+                                public void onChanged(List<NoteModel> noteModels) {
+                                    respondToNotesList(noteModels);
+                                }
+                            });
+                        }
+                        break;
                 }
+                return true;
             });
             popupMenu.show();
         });
@@ -105,6 +111,11 @@ public class HomeFragment extends Fragment implements NoteAdapter.NotesClickList
             bundle.putBoolean(Constants.isNewKey,true);
             navController.navigate(R.id.action_homeFragment_to_editNoteFragment,bundle);
         });
+    }
+
+    private void respondToNotesList(List<NoteModel> noteModels){
+        noteAdapter.addData((ArrayList<NoteModel>) noteModels);
+        binding.progressBar.setVisibility(View.GONE);
     }
 
     @Override
@@ -126,25 +137,11 @@ public class HomeFragment extends Fragment implements NoteAdapter.NotesClickList
     // todo just toggle archived and un-archived
     @Override
     public void archiveNote(NoteModel note) {
-        if(!isArchivedList){
-            Snackbar.make(binding.getRoot(),"Archived", Snackbar.LENGTH_SHORT).show();
-            NotesDatabase.databaseWriteExecutor.execute(new Runnable() {
-                @Override
-                public void run() {
-                    note.setArchived(true);
-                    notesDao.updateNote(note);
-                }
-            });
-        }else{
+        if(note.isArchived)
             Snackbar.make(binding.getRoot(),"UnArchived", Snackbar.LENGTH_SHORT).show();
-            NotesDatabase.databaseWriteExecutor.execute(new Runnable() {
-                @Override
-                public void run() {
-                    note.setArchived(null);
-                    notesDao.updateNote(note);
-                }
-            });
-        }
+        else
+            Snackbar.make(binding.getRoot(),"Archived", Snackbar.LENGTH_SHORT).show();
+        viewModel.toggleTheArchiveStatus(note);
     }
 
     @Override
@@ -156,12 +153,7 @@ public class HomeFragment extends Fragment implements NoteAdapter.NotesClickList
             public boolean onMenuItemClick(MenuItem menuItem) {
                 switch (menuItem.getItemId()){
                     case R.id.delete:
-                        NotesDatabase.databaseWriteExecutor.execute(new Runnable() {
-                            @Override
-                            public void run() {
-                                notesDao.deleteNote(note);
-                            }
-                        });
+                        viewModel.deleteNote(note);
                         Snackbar.make(binding.getRoot(),"Deleted",Snackbar.LENGTH_SHORT).show();
                         break;
                     case R.id.share:

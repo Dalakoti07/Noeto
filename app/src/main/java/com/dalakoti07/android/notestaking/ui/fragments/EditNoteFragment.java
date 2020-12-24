@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
@@ -19,6 +20,7 @@ import com.dalakoti07.android.notestaking.room.models.NoteModel;
 import com.dalakoti07.android.notestaking.ui.adapters.NoteAdapter;
 import com.dalakoti07.android.notestaking.utils.Constants;
 import com.dalakoti07.android.notestaking.utils.ParcelableNote;
+import com.dalakoti07.android.notestaking.viewModels.EditNoteViewModel;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -27,10 +29,8 @@ import java.util.Date;
 
 //act as a fragment which can create a new note or edit an existing note
 public class EditNoteFragment extends Fragment {
-    //todo create a viewmodel
     private FragmentEditNoteBinding binding;
-    private NotesDatabase notesDatabase;
-    private NotesDao notesDao;
+    private EditNoteViewModel viewModel;
     private NavController navController;
     private Boolean creatingANewNote;
     private ParcelableNote parcelableNote;
@@ -47,31 +47,17 @@ public class EditNoteFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         Bundle bundle=getArguments();
         creatingANewNote=bundle.getBoolean(Constants.isNewKey);
+        viewModel= ViewModelProviders.of(getActivity()).get(EditNoteViewModel.class);
         if(!creatingANewNote){
             parcelableNote=bundle.getParcelable(Constants.editNoteKey);
             setTheDataToUI();
         }
         navController= NavHostFragment.findNavController(this);
-        notesDatabase= NotesApp.getNotesDatabase();
-        notesDao=notesDatabase.notesDao();
         binding.btnDone.setOnClickListener(view -> {
             if(creatingANewNote){
-                NotesDatabase.databaseWriteExecutor.execute(() -> {
-                    notesDao.insertNote(new NoteModel(binding.etTitle.getText().toString(),
-                            binding.etDescription.getText().toString(),
-                            getTheDateAndTime()));
-                });
+                viewModel.createNewNote(binding.etTitle.getText().toString(),binding.etDescription.getText().toString());
             }else{
-                NotesDatabase.databaseWriteExecutor.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        NoteModel noteModel= new NoteModel(binding.etTitle.getText().toString(),binding.etDescription.getText().toString(),
-                                getTheDateAndTime());
-                        noteModel.setNotesId(parcelableNote.getNotesId());
-                        noteModel.setArchived(parcelableNote.getArchived());
-                        notesDao.updateNote(noteModel);
-                    }
-                });
+                viewModel.updateTheNote(parcelableNote,binding.etTitle.getText().toString(),binding.etDescription.getText().toString());
             }
             //todo close keyboard before going back
             navController.navigateUp();
@@ -83,12 +69,6 @@ public class EditNoteFragment extends Fragment {
         binding.tvUpdatedOn.append(parcelableNote.getUpdatedOn());
         binding.etTitle.setText(parcelableNote.getNoteTitle());
         binding.etDescription.setText(parcelableNote.getNotesDescription());
-    }
-
-    private String getTheDateAndTime() {
-        Date date = Calendar.getInstance().getTime();
-        DateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy, hh:mm a");
-        return dateFormat.format(date);
     }
 
     @Override
