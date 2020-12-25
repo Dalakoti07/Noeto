@@ -1,6 +1,7 @@
 package com.dalakoti07.android.notestaking.room;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.room.Database;
 import androidx.room.Room;
@@ -15,19 +16,21 @@ import java.util.concurrent.Executors;
 
 @Database(entities = {NoteModel.class},version = 2)
 public abstract class NotesDatabase extends RoomDatabase {
-
+    private static final String TAG = "NotesDatabase";
     public abstract NotesDao notesDao();
 
     private static final int NUMBER_OF_THREADS = 4;
     public static final ExecutorService databaseWriteExecutor =
             Executors.newFixedThreadPool(NUMBER_OF_THREADS);
 
-    private static volatile NotesDatabase INSTANCE;
+    //object creation would be handled by dagger see room-module
+    /*private static volatile NotesDatabase INSTANCE;
 
     public static NotesDatabase getNotesDatabase(final Context context){
         if (INSTANCE == null) {
             synchronized (NotesDatabase.class) {
                 if (INSTANCE == null) {
+                    Log.d(TAG, "created NotesDatabase");
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
                             NotesDatabase.class, "notes_database")
                             .fallbackToDestructiveMigration()
@@ -36,5 +39,5 @@ public abstract class NotesDatabase extends RoomDatabase {
             }
         }
         return INSTANCE;
-    }
+    }*/
 }

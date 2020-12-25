@@ -12,30 +12,32 @@ import com.dalakoti07.android.notestaking.room.models.NoteModel;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 public class NotesRepository {
     private static final String TAG = "NotesRepository";
     private static volatile NotesRepository notesRepository;
-    private NotesDatabase notesDatabase;
     private NotesDao notesDao;
     private LiveData<List<NoteModel>> allNotes;
     private LiveData<List<NoteModel>> allArchivedNotes;
 
-    private NotesRepository(NotesDatabase database){
+    @Inject
+    public NotesRepository(NotesDao notesDao){
         Log.d(TAG, "NotesRepository: created");
-        notesDatabase=database;
-        notesDao=notesDatabase.notesDao();
+        this.notesDao=notesDao;
         allNotes=notesDao.fetchAllNotes();
         allArchivedNotes=notesDao.fetchArchivedNotes();
     }
 
-    public static NotesRepository getNotesRepositoryInstance(){
+    //creation would be handled by dagger
+/*    public static NotesRepository getNotesRepositoryInstance(){
         if(notesRepository==null){
             synchronized (NotesRepository.class){
                 notesRepository=new NotesRepository(NotesApp.getNotesDatabase());
             }
         }
         return notesRepository;
-    }
+    }*/
 
     public void addANote(NoteModel note){
         NotesDatabase.databaseWriteExecutor.execute(() -> {

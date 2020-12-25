@@ -1,5 +1,6 @@
 package com.dalakoti07.android.notestaking.ui.fragments;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -27,15 +28,19 @@ import com.dalakoti07.android.notestaking.databinding.FragmentHomeBinding;
 import com.dalakoti07.android.notestaking.room.NotesDao;
 import com.dalakoti07.android.notestaking.room.NotesDatabase;
 import com.dalakoti07.android.notestaking.room.models.NoteModel;
+import com.dalakoti07.android.notestaking.ui.MainActivity;
 import com.dalakoti07.android.notestaking.ui.adapters.NoteAdapter;
 import com.dalakoti07.android.notestaking.ui.adapters.SimpleItemTouchHelperCallback;
 import com.dalakoti07.android.notestaking.utils.Constants;
 import com.dalakoti07.android.notestaking.utils.ParcelableNote;
 import com.dalakoti07.android.notestaking.viewModels.HomeFragmentViewModel;
+import com.dalakoti07.android.notestaking.viewModels.ViewModelProviderFactory;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Inject;
 
 public class HomeFragment extends Fragment implements NoteAdapter.NotesClickListener{
     private static final String TAG = "HomeFragment";
@@ -44,6 +49,20 @@ public class HomeFragment extends Fragment implements NoteAdapter.NotesClickList
     private NoteAdapter noteAdapter;
     private PopupMenu popupMenu;
     private HomeFragmentViewModel viewModel;
+
+    @Inject
+    Context context;
+
+    @Inject
+    ViewModelProviderFactory viewModelFactory;
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        if(getActivity()!=null){
+            ((MainActivity)getActivity()).mainComponent.inject(this);
+        }
+    }
 
     @Nullable
     @Override
@@ -58,7 +77,7 @@ public class HomeFragment extends Fragment implements NoteAdapter.NotesClickList
 
         noteAdapter=new NoteAdapter(getContext(),this);
         binding.rvNotes.setAdapter(noteAdapter);
-        viewModel= ViewModelProviders.of(getActivity()).get(HomeFragmentViewModel.class);
+        viewModel= ViewModelProviders.of(getActivity(),viewModelFactory).get(HomeFragmentViewModel.class);
         viewModel.getToolBarName().observe(getViewLifecycleOwner(), s -> binding.tvToolbarTitle.setText(s));
         viewModel.getNotesList().observe(getViewLifecycleOwner(), resp->{respondToNotesList(resp);});
 
@@ -101,9 +120,19 @@ public class HomeFragment extends Fragment implements NoteAdapter.NotesClickList
         });
     }
 
-    // listenning to response from mutable livedata
+    // listening to response from mutable livedata
     private void respondToNotesList(List<NoteModel> noteModels){
-        noteAdapter.addData((ArrayList<NoteModel>) noteModels);
+        if(noteModels.size()==0 ||noteModels==null){
+            noteAdapter.clearData();
+            binding.llEmpty.setVisibility(View.VISIBLE);
+            if(viewModel.isViewingAllNotes())
+                binding.tvNoNotesMsg.setText("You have no notes!");
+            else
+                binding.tvNoNotesMsg.setText("You haven't archived yet!");
+        }else{
+            binding.llEmpty.setVisibility(View.GONE);
+            noteAdapter.addData((ArrayList<NoteModel>) noteModels);
+        }
         binding.progressBar.setVisibility(View.GONE);
     }
 

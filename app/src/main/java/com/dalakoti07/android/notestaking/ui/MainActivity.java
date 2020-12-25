@@ -9,15 +9,22 @@ import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
 
+import com.dalakoti07.android.notestaking.NotesApp;
 import com.dalakoti07.android.notestaking.R;
+import com.dalakoti07.android.notestaking.di.components.MainComponent;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 
 public class MainActivity extends AppCompatActivity {
     private GoogleSignInAccount account;
+    public MainComponent mainComponent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        //dagger injection
+        mainComponent= NotesApp.get(this).getAppComponent().mainComponent().create(this);
+        mainComponent.inject(this);
+
         super.onCreate(savedInstanceState);
         changeStatusBarColor(R.color.white);
         setContentView(R.layout.activity_main);

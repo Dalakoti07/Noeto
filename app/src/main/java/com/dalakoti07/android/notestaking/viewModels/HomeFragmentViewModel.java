@@ -13,6 +13,8 @@ import com.dalakoti07.android.notestaking.room.models.NoteModel;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 public class HomeFragmentViewModel extends ViewModel {
     private static final String TAG = "HomeFragmentViewModel";
 
@@ -32,17 +34,20 @@ public class HomeFragmentViewModel extends ViewModel {
         return toolBarHeading;
     }
 
-    private final NotesRepository notesRepository;
+    private NotesRepository notesRepository;
 
-    public HomeFragmentViewModel(){
+    @Inject
+    public HomeFragmentViewModel(NotesRepository repository){
+        this.notesRepository=repository;
         Log.d(TAG, "HomeFragmentViewModel: created");
-        notesRepository=NotesRepository.getNotesRepositoryInstance();
+        //repo provided by dagger
         allBooks=notesRepository.getAllNotes();
         archivedBooks=notesRepository.getArchivedNotes();
 
         exposedNotes.addSource(allBooks, new Observer<List<NoteModel>>() {
             @Override
             public void onChanged(List<NoteModel> noteModels) {
+                // inform only if we are viewing all notes
                 if(viewingAllNotes){
                     exposedNotes.setValue(noteModels);
                 }

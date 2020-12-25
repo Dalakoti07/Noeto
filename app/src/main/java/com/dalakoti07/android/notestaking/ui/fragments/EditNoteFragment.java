@@ -1,5 +1,6 @@
 package com.dalakoti07.android.notestaking.ui.fragments;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,15 +19,19 @@ import com.dalakoti07.android.notestaking.databinding.FragmentEditNoteBinding;
 import com.dalakoti07.android.notestaking.room.NotesDao;
 import com.dalakoti07.android.notestaking.room.NotesDatabase;
 import com.dalakoti07.android.notestaking.room.models.NoteModel;
+import com.dalakoti07.android.notestaking.ui.MainActivity;
 import com.dalakoti07.android.notestaking.ui.adapters.NoteAdapter;
 import com.dalakoti07.android.notestaking.utils.Constants;
 import com.dalakoti07.android.notestaking.utils.ParcelableNote;
 import com.dalakoti07.android.notestaking.viewModels.EditNoteViewModel;
+import com.dalakoti07.android.notestaking.viewModels.ViewModelProviderFactory;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+
+import javax.inject.Inject;
 
 //act as a fragment which can create a new note or edit an existing note
 public class EditNoteFragment extends Fragment {
@@ -35,6 +40,20 @@ public class EditNoteFragment extends Fragment {
     private NavController navController;
     private Boolean creatingANewNote;
     private ParcelableNote parcelableNote;
+
+    @Inject
+    Context context;
+
+    @Inject
+    ViewModelProviderFactory viewModelFactory;
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        if(getActivity()!=null){
+            ((MainActivity)getActivity()).mainComponent.inject(this);
+        }
+    }
 
     @Nullable
     @Override
@@ -48,7 +67,7 @@ public class EditNoteFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         Bundle bundle=getArguments();
         creatingANewNote=bundle.getBoolean(Constants.isNewKey);
-        viewModel= ViewModelProviders.of(getActivity()).get(EditNoteViewModel.class);
+        viewModel= ViewModelProviders.of(getActivity(),viewModelFactory).get(EditNoteViewModel.class);
         if(!creatingANewNote){
             parcelableNote=bundle.getParcelable(Constants.editNoteKey);
             setTheDataToUI();

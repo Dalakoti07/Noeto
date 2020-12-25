@@ -14,7 +14,10 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+import javax.inject.Inject;
+
 public class EditNoteViewModel extends ViewModel {
+
     private NotesRepository notesRepository;
     private static final String TAG = "EditNoteViewModel";
     private MutableLiveData<String> titleError=new MutableLiveData<>();
@@ -28,9 +31,11 @@ public class EditNoteViewModel extends ViewModel {
         return descriptionError;
     }
 
-    public EditNoteViewModel(){
+    @Inject
+    public EditNoteViewModel(NotesRepository repository){
+        //injection done by dagger
+        this.notesRepository=repository;
         Log.d(TAG, "EditNoteViewModel: created");
-        notesRepository=NotesRepository.getNotesRepositoryInstance();
     }
 
     public boolean validateData(String noteTitle,String noteDescription){
