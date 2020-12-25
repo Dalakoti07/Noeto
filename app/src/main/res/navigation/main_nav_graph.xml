@@ -11,9 +11,19 @@
         android:name="com.dalakoti07.android.notestaking.ui.fragments.SplashScreenFragment"
         android:label="SplashScreenFragment" >
         <action
+            app:popUpToInclusive="true"
+            app:popUpTo="@id/splashScreenFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
             android:id="@+id/action_splashScreenFragment_to_homeFragment"
             app:destination="@id/homeFragment" />
         <action
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
             app:popUpToInclusive="true"
             app:popUpTo="@id/splashScreenFragment"
             android:id="@+id/action_splashScreenFragment_to_logInFragment"
@@ -26,6 +36,10 @@
         android:name="com.dalakoti07.android.notestaking.ui.fragments.LogInFragment"
         android:label="LogInFragment" >
         <action
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
             app:popUpToInclusive="true"
             app:popUpTo="@id/logInFragment"
             android:id="@+id/action_logInFragment_to_homeFragment"
@@ -38,8 +52,19 @@
         android:name="com.dalakoti07.android.notestaking.ui.fragments.HomeFragment"
         android:label="HomeFragment" >
         <action
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
             android:id="@+id/action_homeFragment_to_editNoteFragment"
             app:destination="@id/editNoteFragment" />
+        <action
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            android:id="@+id/action_homeFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
     </fragment>
 
     <fragment
@@ -54,5 +79,20 @@
         <argument
             android:name="editNote"
             app:argType="com.dalakoti07.android.notestaking.utils.ParcelableNote" />
+    </fragment>
+    <fragment
+        tools:layout="@layout/fragment_profile"
+        android:id="@+id/profileFragment"
+        android:name="com.dalakoti07.android.notestaking.ui.fragments.ProfileFragment"
+        android:label="ProfileFragment" >
+        <action
+            app:popUpToInclusive="true"
+            app:popUpTo="@id/homeFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            android:id="@+id/action_profileFragment_to_logInFragment"
+            app:destination="@id/logInFragment" />
     </fragment>
 </navigation>

@@ -3,7 +3,9 @@ package com.dalakoti07.android.notestaking.viewModels;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 
 import com.dalakoti07.android.notestaking.repository.NotesRepository;
@@ -37,6 +39,8 @@ public class HomeFragmentViewModel extends ViewModel {
         return currentNotesList;
     }
 
+    //todo mediator would observer archived and non archived live data and make changes to exposed
+    // livedata to fragment as per current option selected
     public LiveData<List<NoteModel>> optionSelected(String option){
         if(option.equals("archived")){
             viewingAllNotes=false;

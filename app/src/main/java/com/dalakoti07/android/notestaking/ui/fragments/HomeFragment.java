@@ -96,6 +96,9 @@ public class HomeFragment extends Fragment implements NoteAdapter.NotesClickList
             bundle.putBoolean(Constants.isNewKey,true);
             navController.navigate(R.id.action_homeFragment_to_editNoteFragment,bundle);
         });
+        binding.ivProfile.setOnClickListener(profile->{
+            navController.navigate(R.id.action_homeFragment_to_profileFragment);
+        });
     }
 
     // listenning to response from mutable livedata
