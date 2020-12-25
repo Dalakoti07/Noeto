@@ -6,16 +6,50 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <androidx.appcompat.widget.Toolbar
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         android:background="@color/white"
         android:id="@+id/toolbar"
         android:elevation="10dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:title="Notes taker"
         app:titleMarginStart="@dimen/large_margin"
         android:layout_width="match_parent"
         app:contentInsetStart="0dp"
-        android:layout_height="?actionBarSize"/>
+        android:layout_height="?actionBarSize">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:padding="4dp"
+                android:id="@+id/iv_back"
+                android:layout_marginLeft="@dimen/small_margin"
+                android:src="@drawable/ic_arrow_back"
+                android:layout_gravity="center"
+                android:layout_width="40dp"
+                android:layout_height="40dp"/>
+
+            <TextView
+                android:id="@+id/tv_toolbar_title"
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:textColor="@color/black"
+                android:textSize="@dimen/large_text_size"
+                android:text=""
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"/>
+
+            <ImageView
+                android:layout_marginRight="@dimen/small_margin"
+                android:layout_gravity="center"
+                android:visibility="invisible"
+                android:gravity="end"
+                android:layout_width="40dp"
+                android:layout_height="40dp"/>
+
+        </LinearLayout>
+
+    </androidx.appcompat.widget.Toolbar>
 
     <TextView
         android:visibility="gone"
@@ -23,41 +57,67 @@
         android:textSize="@dimen/small_text_size"
         android:padding="@dimen/small_margin"
         app:layout_constraintTop_toBottomOf="@id/toolbar"
-        app:layout_constraintStart_toStartOf="@id/et_title"
+        app:layout_constraintStart_toStartOf="@id/title_input_layout"
         android:id="@+id/tv_updated_on"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
-    <com.google.android.material.textfield.TextInputEditText
-        android:hint="Notes Title"
-        android:padding="@dimen/small_margin"
-        android:layout_marginEnd="@dimen/small_margin"
-        android:layout_marginStart="@dimen/small_margin"
+    <com.google.android.material.textfield.TextInputLayout
+        app:errorIconDrawable="@null"
+        app:boxStrokeColor="@color/grey"
+        app:hintTextColor="@color/grey"
+        app:errorTextColor="@color/black"
+        app:boxStrokeErrorColor="@color/black"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:theme="@style/TextInputLayoutAppearance"
+        android:id="@+id/title_input_layout"
         app:layout_constraintTop_toBottomOf="@id/tv_updated_on"
         android:layout_marginTop="@dimen/small_margin"
-        android:background="@drawable/et_rect_border"
-        android:id="@+id/et_title"
+        android:layout_marginEnd="@dimen/small_margin"
+        android:layout_marginStart="@dimen/small_margin"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content">
+        <com.google.android.material.textfield.TextInputEditText
+            android:hint="Notes Title"
+            android:padding="@dimen/small_margin"
+            android:id="@+id/et_title"
+            android:cursorVisible="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 
-    <com.google.android.material.textfield.TextInputEditText
-        android:id="@+id/et_description"
-        android:padding="@dimen/small_margin"
-        android:hint="Notes content"
-        android:gravity="top"
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        app:errorIconDrawable="@null"
+        android:layout_width="match_parent"
+        android:id="@+id/description_input_layout"
+        app:boxStrokeColor="@color/grey"
+        app:hintTextColor="@color/grey"
+        app:errorEnabled="true"
+        app:errorTextColor="@color/black"
+        app:boxStrokeErrorColor="@color/black"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:theme="@style/TextInputLayoutAppearance"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/title_input_layout"
         android:layout_marginEnd="@dimen/small_margin"
         android:layout_marginStart="@dimen/small_margin"
         android:layout_marginTop="@dimen/small_margin"
-        android:background="@drawable/et_rect_border"
-        android:minHeight="400dp"
-        android:scrollbars="vertical"
-        android:layout_marginBottom="@dimen/large_margin"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/et_title"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"/>
+        android:layout_marginBottom="@dimen/small_margin"
+        >
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_description"
+            android:minHeight="200dp"
+            android:padding="@dimen/small_margin"
+            android:hint="Notes content"
+            android:gravity="top"
+            android:scrollbars="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:src="@drawable/ic_done"

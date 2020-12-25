@@ -15,8 +15,6 @@ import java.util.List;
 
 @Dao
 public interface NotesDao {
-    //todo how do we get to know if single shot query was successful or not
-
     @Insert
     void insertNote(NoteModel note);
 

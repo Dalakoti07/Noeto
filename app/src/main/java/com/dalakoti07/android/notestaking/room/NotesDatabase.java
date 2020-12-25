@@ -14,7 +14,7 @@ import com.dalakoti07.android.notestaking.room.models.NoteModel;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@Database(entities = {NoteModel.class},version = 2)
+@Database(entities = {NoteModel.class},version = 3)
 public abstract class NotesDatabase extends RoomDatabase {
     private static final String TAG = "NotesDatabase";
     public abstract NotesDao notesDao();
@@ -24,20 +24,4 @@ public abstract class NotesDatabase extends RoomDatabase {
             Executors.newFixedThreadPool(NUMBER_OF_THREADS);
 
     //object creation would be handled by dagger see room-module
-    /*private static volatile NotesDatabase INSTANCE;
-
-    public static NotesDatabase getNotesDatabase(final Context context){
-        if (INSTANCE == null) {
-            synchronized (NotesDatabase.class) {
-                if (INSTANCE == null) {
-                    Log.d(TAG, "created NotesDatabase");
-                    INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
-                            NotesDatabase.class, "notes_database")
-                            .fallbackToDestructiveMigration()
-                            .build();
-                }
-            }
-        }
-        return INSTANCE;
-    }*/
 }
