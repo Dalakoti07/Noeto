@@ -70,13 +70,13 @@ public class HomeFragment extends Fragment implements NoteAdapter.NotesClickList
                     case R.id.all:
                         if(! viewModel.isViewingAllNotes()){
                             binding.progressBar.setVisibility(View.VISIBLE);
-                            viewModel.optionSelected("all").observe(getViewLifecycleOwner(), resp->{respondToNotesList(resp);});
+                            viewModel.optionSelected("all");
                         }
                         break;
                     case R.id.archived:
                         if(viewModel.isViewingAllNotes()){
                             binding.progressBar.setVisibility(View.VISIBLE);
-                            viewModel.optionSelected("archived").observe(getViewLifecycleOwner(), resp->{respondToNotesList(resp);});
+                            viewModel.optionSelected("archived");
                         }
                         break;
                 }

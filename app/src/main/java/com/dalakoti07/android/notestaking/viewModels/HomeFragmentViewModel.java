@@ -15,7 +15,12 @@ import java.util.List;
 
 public class HomeFragmentViewModel extends ViewModel {
     private static final String TAG = "HomeFragmentViewModel";
-    private LiveData<List<NoteModel>> currentNotesList;
+
+    private LiveData<List<NoteModel>> allBooks= new MutableLiveData<>();
+    private LiveData<List<NoteModel>> archivedBooks= new MutableLiveData<>();
+
+    private final MediatorLiveData<List<NoteModel>> exposedNotes= new MediatorLiveData<>();
+
     private final MutableLiveData<String> toolBarHeading=new MutableLiveData<>("Your Notes");
     private boolean viewingAllNotes=true;
 
@@ -32,24 +37,42 @@ public class HomeFragmentViewModel extends ViewModel {
     public HomeFragmentViewModel(){
         Log.d(TAG, "HomeFragmentViewModel: created");
         notesRepository=NotesRepository.getNotesRepositoryInstance();
-        currentNotesList=notesRepository.getAllNotes();
+        allBooks=notesRepository.getAllNotes();
+        archivedBooks=notesRepository.getArchivedNotes();
+
+        exposedNotes.addSource(allBooks, new Observer<List<NoteModel>>() {
+            @Override
+            public void onChanged(List<NoteModel> noteModels) {
+                if(viewingAllNotes){
+                    exposedNotes.setValue(noteModels);
+                }
+            }
+        });
+        exposedNotes.addSource(archivedBooks, new Observer<List<NoteModel>>() {
+            @Override
+            public void onChanged(List<NoteModel> noteModels) {
+                if(!viewingAllNotes){
+                    exposedNotes.setValue(noteModels);
+                }
+            }
+        });
+
     }
 
     public LiveData<List<NoteModel>> getNotesList(){
-        return currentNotesList;
+        return exposedNotes;
     }
 
-    //todo mediator would observer archived and non archived live data and make changes to exposed
-    // livedata to fragment as per current option selected
-    public LiveData<List<NoteModel>> optionSelected(String option){
+    // credits https://proandroiddev.com/mediatorlivedata-to-the-rescue-5d27645b9bc3
+    public void optionSelected(String option){
         if(option.equals("archived")){
             viewingAllNotes=false;
             toolBarHeading.setValue("Archived notes");
-             return currentNotesList=notesRepository.getArchivedNotes();
+            exposedNotes.setValue(archivedBooks.getValue());
         }else{
             viewingAllNotes=true;
             toolBarHeading.setValue("Your Notes");
-            return currentNotesList=notesRepository.getAllNotes();
+            exposedNotes.setValue(allBooks.getValue());
         }
     }
 
