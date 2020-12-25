@@ -26,6 +26,8 @@ To build and install the app in running emulator
 ./gradlew installDebug
 ```
 
+##### Or Just download the apk file in from [here](/builds/app-debug.apk)
+
 ##### How its being developed?:
 
 All the android new Best Practises have been implemented:
