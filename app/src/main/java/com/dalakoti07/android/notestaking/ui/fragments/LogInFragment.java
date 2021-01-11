@@ -1,5 +1,6 @@
 package com.dalakoti07.android.notestaking.ui.fragments;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,6 +18,8 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.dalakoti07.android.notestaking.R;
 import com.dalakoti07.android.notestaking.databinding.FragmentLoginBinding;
+import com.dalakoti07.android.notestaking.repository.NotesRepository;
+import com.dalakoti07.android.notestaking.ui.MainActivity;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -25,6 +28,8 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 
+import javax.inject.Inject;
+
 public class LogInFragment extends Fragment {
     private static final String TAG = "LogInFragment";
     private FragmentLoginBinding binding;
@@ -32,12 +37,22 @@ public class LogInFragment extends Fragment {
     private GoogleSignInOptions googleSignInOptions;
     private GoogleSignInClient googleSignInClient;
     private static final int RC_SIGN_IN = 1;
+    @Inject
+    public NotesRepository notesRepository;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding=FragmentLoginBinding.inflate(inflater,container,false);
         return binding.getRoot();
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        if(getActivity()!=null){
+            ((MainActivity)getActivity()).mainComponent.inject(this);
+        }
     }
 
     @Override
@@ -92,6 +107,9 @@ public class LogInFragment extends Fragment {
         if(account==null){
             Toast.makeText(getContext(),"Failed",Toast.LENGTH_SHORT).show();
         }else{
+            // save user id
+            MainActivity.userId=account.getId();
+            notesRepository.newUserLoggedIn();
             navController.navigate(R.id.action_logInFragment_to_homeFragment);
         }
     }

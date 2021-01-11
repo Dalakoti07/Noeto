@@ -125,16 +125,16 @@ public class EditNoteViewModel extends ViewModel {
         return false;
     }
 
-    public void createNewNote(){
+    public void createNewNote(String userId){
         notesRepository.addANote(
-                new NoteModel(noteTitle,
+                new NoteModel(userId,noteTitle,
                         noteDescription,
                         getTheDateAndTime())
         );
     }
 
     public void updateTheNote(ParcelableNote pNote){
-        NoteModel noteModel= new NoteModel(noteTitle,noteDescription,
+        NoteModel noteModel= new NoteModel(pNote.getUserId(),noteTitle,noteDescription,
                 getTheDateAndTime());
         noteModel.setNotesId(pNote.getNotesId());
         noteModel.setArchived(pNote.getArchived());

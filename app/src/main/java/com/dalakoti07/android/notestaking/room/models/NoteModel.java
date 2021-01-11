@@ -9,6 +9,9 @@ import androidx.room.PrimaryKey;
 @Entity(tableName = "notes")
 public class NoteModel {
 
+    @ColumnInfo(name = "userId")
+    public String userId;
+
     @PrimaryKey(autoGenerate = true)
     public int notesId;
 
@@ -61,10 +64,19 @@ public class NoteModel {
         this.updatedOn = updatedOn;
     }
 
-    public NoteModel(String noteTitle, String notesDescription, String updatedOn) {
+    public NoteModel(String userId,String noteTitle, String notesDescription, String updatedOn) {
         this.noteTitle = noteTitle;
         this.notesDescription = notesDescription;
         this.updatedOn = updatedOn;
+        this.userId=userId;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     @NonNull

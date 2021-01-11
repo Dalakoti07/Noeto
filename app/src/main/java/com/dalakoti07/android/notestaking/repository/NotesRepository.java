@@ -8,6 +8,7 @@ import com.dalakoti07.android.notestaking.NotesApp;
 import com.dalakoti07.android.notestaking.room.NotesDao;
 import com.dalakoti07.android.notestaking.room.NotesDatabase;
 import com.dalakoti07.android.notestaking.room.models.NoteModel;
+import com.dalakoti07.android.notestaking.ui.MainActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,8 +26,15 @@ public class NotesRepository {
     public NotesRepository(NotesDao notesDao){
         Log.d(TAG, "NotesRepository: created");
         this.notesDao=notesDao;
-        allNotes=notesDao.fetchAllNotes();
-        allArchivedNotes=notesDao.fetchArchivedNotes();
+        Log.d(TAG, "NotesRepository: userId is "+MainActivity.userId);
+        allNotes=notesDao.fetchAllNotes(MainActivity.userId);
+        allArchivedNotes=notesDao.fetchArchivedNotes(MainActivity.userId);
+    }
+
+    public void newUserLoggedIn(){
+
+        allNotes=notesDao.fetchAllNotes(MainActivity.userId);
+        allArchivedNotes=notesDao.fetchArchivedNotes(MainActivity.userId);
     }
 
     //creation would be handled by dagger

@@ -8,6 +8,8 @@ import com.dalakoti07.android.notestaking.di.modules.MainViewModelModule;
 import com.dalakoti07.android.notestaking.ui.MainActivity;
 import com.dalakoti07.android.notestaking.ui.fragments.EditNoteFragment;
 import com.dalakoti07.android.notestaking.ui.fragments.HomeFragment;
+import com.dalakoti07.android.notestaking.ui.fragments.LogInFragment;
+import com.dalakoti07.android.notestaking.ui.fragments.ProfileFragment;
 
 import dagger.BindsInstance;
 import dagger.Subcomponent;
@@ -24,4 +26,6 @@ public interface MainComponent {
     void inject(MainActivity activity);
     void inject(HomeFragment fragment);
     void inject(EditNoteFragment fragment);
+    void inject(ProfileFragment fragment);
+    void inject(LogInFragment fragment);
 }

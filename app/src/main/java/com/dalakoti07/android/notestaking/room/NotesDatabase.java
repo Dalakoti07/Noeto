@@ -14,7 +14,7 @@ import com.dalakoti07.android.notestaking.room.models.NoteModel;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@Database(entities = {NoteModel.class},version = 3)
+@Database(entities = {NoteModel.class},version = 4)
 public abstract class NotesDatabase extends RoomDatabase {
     private static final String TAG = "NotesDatabase";
     public abstract NotesDao notesDao();

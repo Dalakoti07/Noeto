@@ -7,6 +7,7 @@ import com.dalakoti07.android.notestaking.room.models.NoteModel;
 
 public class ParcelableNote implements Parcelable {
     private int notesId;
+    private String userId;
 
     private String noteTitle;
 
@@ -47,6 +48,7 @@ public class ParcelableNote implements Parcelable {
         this.notesDescription= noteModel.notesDescription;
         this.updatedOn= noteModel.updatedOn;
         this.isArchived= noteModel.isArchived;
+        this.userId=noteModel.userId;
     }
 
     @Override
@@ -81,5 +83,13 @@ public class ParcelableNote implements Parcelable {
 
     public Boolean getArchived() {
         return isArchived;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 }

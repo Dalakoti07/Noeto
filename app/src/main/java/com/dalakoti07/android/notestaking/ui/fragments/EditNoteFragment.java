@@ -1,11 +1,13 @@
 package com.dalakoti07.android.notestaking.ui.fragments;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -24,7 +26,9 @@ import com.dalakoti07.android.notestaking.viewModels.ViewModelProviderFactory;
 
 import javax.inject.Inject;
 
-//act as a fragment which can create a new note or edit an existing note
+/**
+ * act as a fragment which can create a new note or edit an existing note
+*/
 public class EditNoteFragment extends Fragment {
     private static final String TAG = "EditNoteFragment";
     private FragmentEditNoteBinding binding;
@@ -83,11 +87,12 @@ public class EditNoteFragment extends Fragment {
             if(! viewModel.validateData())
                 return;
             if(creatingANewNote){
-                viewModel.createNewNote();
+                viewModel.createNewNote(MainActivity.userId);
             }else{
                 viewModel.updateTheNote(parcelableNote);
             }
             //todo close keyboard before going back
+            hideKeyboard(getActivity());
             navController.navigateUp();
         });
     }
@@ -97,6 +102,15 @@ public class EditNoteFragment extends Fragment {
         binding.tvUpdatedOn.append(parcelableNote.getUpdatedOn());
         binding.etTitle.setText(parcelableNote.getNoteTitle());
         binding.etDescription.setText(parcelableNote.getNotesDescription());
+    }
+
+    public static void hideKeyboard(Activity activity) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        View view = activity.getCurrentFocus();
+        if (view == null) {
+            view = new View(activity);
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
     @Override

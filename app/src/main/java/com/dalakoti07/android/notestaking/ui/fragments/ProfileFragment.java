@@ -1,5 +1,6 @@
 package com.dalakoti07.android.notestaking.ui.fragments;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -89,7 +90,12 @@ public class ProfileFragment extends Fragment {
                     public void onComplete(@NonNull Task<Void> task) {
                         Log.d(TAG, "logout done");
                         //show the login screen again pop the back-stack
-                        navController.navigate(R.id.action_profileFragment_to_logInFragment);
+                        MainActivity.userId="";
+                        if(getActivity()!=null){
+                            getActivity().finish();
+                            startActivity(new Intent(getContext(),MainActivity.class));
+//                            navController.navigate(R.id.action_profileFragment_to_logInFragment);
+                        }
                     }
                 });
     }

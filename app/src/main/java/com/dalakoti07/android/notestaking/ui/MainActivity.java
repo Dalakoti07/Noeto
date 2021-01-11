@@ -22,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     private GoogleSignInAccount account;
     public MainComponent mainComponent;
+    public static String userId="";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,15 +36,17 @@ public class MainActivity extends AppCompatActivity {
         account= GoogleSignIn.getLastSignedInAccount(this);
         if(account!=null){
             Log.d(TAG, "main activity logged in user id "+account.getId());
+            userId= account.getId();
         }
     }
 
-    public String getLoggedInUserId(){
+/*    public String getLoggedInUserId(){
         if(account!=null){
-            return account.getId();
+            userId= account.getId();
+            return userId;
         }
         return "";
-    }
+    }*/
 
     protected void changeStatusBarColor(@ColorRes int colorRes) {
         Window window = getWindow();
