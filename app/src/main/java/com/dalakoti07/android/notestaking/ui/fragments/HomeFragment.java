@@ -1,6 +1,7 @@
 package com.dalakoti07.android.notestaking.ui.fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -35,6 +36,7 @@ import com.dalakoti07.android.notestaking.utils.Constants;
 import com.dalakoti07.android.notestaking.utils.ParcelableNote;
 import com.dalakoti07.android.notestaking.viewModels.HomeFragmentViewModel;
 import com.dalakoti07.android.notestaking.viewModels.ViewModelProviderFactory;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
@@ -173,10 +175,23 @@ public class HomeFragment extends Fragment implements NoteAdapter.NotesClickList
             public boolean onMenuItemClick(MenuItem menuItem) {
                 switch (menuItem.getItemId()){
                     case R.id.delete:
-                        viewModel.deleteNote(note);
-                        Snackbar.make(binding.getRoot(),"Deleted",Snackbar.LENGTH_SHORT).show();
+                        new MaterialAlertDialogBuilder(context)
+                                .setTitle("Delete")
+                                .setMessage("Would you like to delete this?")
+                                .setPositiveButton("Yes", (dialogInterface, i) ->{
+                                        viewModel.deleteNote(note);
+                                        Snackbar.make(binding.getRoot(),"Deleted",Snackbar.LENGTH_SHORT).show();
+                                        }
+                                )
+                                .setNeutralButton("Cancel", (dialogInterface, i) -> dialogInterface.dismiss()).show();
                         break;
                     case R.id.share:
+                        Intent intent = new Intent(android.content.Intent.ACTION_SEND);
+                        String shareBody = note.noteTitle+"\n\n"+note.notesDescription;
+                        intent.setType("text/plain");
+                        intent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Noeto");
+                        intent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
+                        startActivity(Intent.createChooser(intent, "Share Notes via"));
                         break;
                     case R.id.cancel:
                         break;

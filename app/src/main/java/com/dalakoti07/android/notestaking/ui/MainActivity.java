@@ -6,6 +6,7 @@ import androidx.core.content.ContextCompat;
 
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
 
@@ -15,7 +16,10 @@ import com.dalakoti07.android.notestaking.di.components.MainComponent;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 
+import java.util.Timer;
+
 public class MainActivity extends AppCompatActivity {
+    private static final String TAG = "MainActivity";
     private GoogleSignInAccount account;
     public MainComponent mainComponent;
 
@@ -29,6 +33,16 @@ public class MainActivity extends AppCompatActivity {
         changeStatusBarColor(R.color.white);
         setContentView(R.layout.activity_main);
         account= GoogleSignIn.getLastSignedInAccount(this);
+        if(account!=null){
+            Log.d(TAG, "main activity logged in user id "+account.getId());
+        }
+    }
+
+    public String getLoggedInUserId(){
+        if(account!=null){
+            return account.getId();
+        }
+        return "";
     }
 
     protected void changeStatusBarColor(@ColorRes int colorRes) {
